@@ -14,7 +14,8 @@ var Panel = (function() {
 				});
 			}
 			panelList[panelList.length - 1].onTop = true;
-		}
+		},
+		minTop = 50;
 
 
 	var p = function(options) {
@@ -47,6 +48,8 @@ var Panel = (function() {
 				icon: 'cog',
 				classCss: ''
 			}, options);
+
+			this.config.top = (this.config.top < minTop) ? minTop : this.config.top;
 
 			// If right is NOT auto, calculate th left according
 			this.config.left = (this.config.right !== 'auto') ? App.$container.width() - this.config.width - this.config.right : this.config.left;
@@ -164,7 +167,7 @@ var Panel = (function() {
 				x = 0,
 				y = 0,
 				minX = 0,
-				minY = 26,
+				minY = minTop,
 				maxX = 0,
 				maxY = 0,
 				classAdded = false;
