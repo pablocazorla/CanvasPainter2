@@ -3,13 +3,14 @@ App.Panel.Color = (function() {
 	'use strict';
 	var panel = Panel({
 			title: 'Color',
-			right: 20,
-			height: 388,
+			top:50,
+			left: 0,
+			height: 264,
 			minHeight: 200,
 			icon: 'adjust',
 			classCss: 'panel-color'
 		}),
-		$content = $('<div class="' + panel.config.classCss + '-content"/>').appendTo(panel.$container);
+		$content = panel.$content;
 
 	/* COLOR QUAD **************************************/
 
@@ -144,16 +145,16 @@ App.Panel.Color = (function() {
 
 	/* EXPANDOS **************************************/
 	var expandoHSV = App.UI.Expando({
-			open: true,
+			//open: true,
 			cssClass: 'expand-hsv',
 			text: 'Hue/Saturation/Value',
-			afterExpand:App.Color.forceUpdate
+			afterExpand: App.Color.forceUpdate
 		}),
 		expandoRGB = App.UI.Expando({
 			//open: true,
 			cssClass: 'expand-rgb',
 			text: 'Red/Green/Blue',
-			afterExpand:App.Color.forceUpdate
+			afterExpand: App.Color.forceUpdate
 		});
 	expandoHSV.$node.appendTo($content);
 	expandoRGB.$node.appendTo($content);

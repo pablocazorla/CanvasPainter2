@@ -189,3 +189,29 @@ select {
   background-color: #666;
   color: #FFF;
 }
+
+/* LAYER *****************************************************************************************/
+#layer-list-container {
+  border-color: #CCC;
+  background-color: #F1F1F1;
+}
+#layer-list li{
+  border-bottom-color:#DDD;
+  background-color: #FFF;
+}
+#layer-list li.current{
+  background-color: #def;
+}
+
+/* tools */
+.layer-tool{
+  border-color:#CCC;
+  -webkit-transition:all .1s;
+  -ms-transition:all .1s;
+  transition:all .1s;
+}
+.layer-tool:hover{
+  color: #FFF;
+  background-color: #222;
+  border-color:#222;
+}

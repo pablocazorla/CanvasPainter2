@@ -3,7 +3,7 @@ App.DocList = (function() {
 	'use strict';
 
 	var list = Utils.observableArray([]),
-		docum = Utils.observable(),
+		docum = Utils.observable(null),
 		$container = $('<div id="docList-container"/>').appendTo(App.$container),
 		createDoc = function(options) {
 			var d = Doc(options);
@@ -38,7 +38,8 @@ App.DocList = (function() {
 		$container: $container,
 		createDoc: createDoc,
 		selectDoc: selectDoc,
-		get doc(){
+		docObservable: docum,
+		get doc() {
 			var d = docum();
 			return d;
 		},

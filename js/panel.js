@@ -79,8 +79,11 @@ var Panel = (function() {
 				this.setDragable(this).setIconPosition();
 			}
 
+			// cont
+			this.$cont = $('<div class="content"/>').appendTo(this.$panelBody);
+
 			// content
-			this.$content = $('<div class="content"/>').appendTo(this.$panelBody);
+			this.$content = $('<div class="panel-content ' + this.config.classCss + '-content"/>').appendTo(this.$cont);
 
 			// resizable
 			if (this.config.resizable) {
@@ -271,14 +274,14 @@ var Panel = (function() {
 		},
 		setContent: function(str) {
 			if (typeof str === 'string') {
-				this.$content.html(str);
+				this.$cont.html(str);
 			} else {
-				this.$content.append(str);
+				this.$cont.append(str);
 			}
 			return this;
 		},
 		get $container() {
-			return this.$content;
+			return this.$cont;
 		}
 	}
 
