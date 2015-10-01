@@ -11,8 +11,19 @@ App.Panel.Layers = (function() {
 		classCss: 'panel-layers'
 	});
 
+	// Tools top
+	var $layerToolsTop = $('<div id="layer-tools-top"/>').appendTo(panel.$content);
 
-	//
+	var sliderOpacity = App.UI.Slider({
+		label: 'Opacity',
+		value: 100,
+		enabled: false
+	}).appendTo($layerToolsTop).subscribe(function(v) {
+		App.DocList.doc.currentLayer.opacity = v;
+		App.DocList.doc.updateRenderer();
+	});
+
+	// List
 	var disabled = true,
 		$layerContainer = $('<div id="layer-list-container"/>').appendTo(panel.$content),
 		$layerList = $('<ul id="layer-list"/>').appendTo($layerContainer);
@@ -30,13 +41,24 @@ App.Panel.Layers = (function() {
 			var j = 0;
 			for (var i = l - 1; i >= 0; i--) {
 				var la = list[i],
-					isCurrent = (la.id === current.id) ? ' class="current"' : '';
-				txt += '<li' + isCurrent + ' data-index="' + i + '" data-id="' + la.id + '" style="top:' + (30 * j++) + 'px">' + la.name + '</li>';
+					isCurrent = (la.id === current.id) ? ' class="current"' : '',
+					visibleIcon = (la.visible) ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>',
+					visibleTitle = (la.visible) ? 'Hide Layer' : 'Show Layer';
+
+				txt += '<li' + isCurrent + ' data-index="' + i + '" data-id="' + la.id + '" style="top:' + (30 * j++) + 'px"><div class="ly-div ly-visible-icon" title="' + visibleTitle + '">' + visibleIcon + '</div><div class="ly-div ly-name">' + la.name + '</div></li>';
 			}
 			$layerList.html(txt);
 
 			$layerList.find('li').each(function() {
-				var $li = $(this);
+				var $li = $(this),
+					id = parseInt($li.attr('data-id'));
+
+				// set visible
+				$li.find('.ly-visible-icon')
+					.mousedown(function() {
+						App.DocList.doc.getLayerById(id).toggleVisible();
+						panel.render();
+					});
 
 				var dragging = false,
 					pageY = 0,
@@ -44,7 +66,6 @@ App.Panel.Layers = (function() {
 					top = parseInt($li.css('top')),
 					index = parseInt($li.attr('data-index')),
 					addedClassDragging = false;
-
 
 				$li.mousedown(function(e) {
 					dif = 0;
@@ -57,8 +78,8 @@ App.Panel.Layers = (function() {
 							$li.css({
 								top: (top - dif) + 'px'
 							});
-							if(!addedClassDragging){
-								addedClassDragging = true;								
+							if (!addedClassDragging) {
+								addedClassDragging = true;
 								$li.addClass('dragging');
 							}
 						}
@@ -66,13 +87,12 @@ App.Panel.Layers = (function() {
 					.mouseup(function() {
 						if (dragging) {
 							dragging = false;
-							if(addedClassDragging){
-								addedClassDragging = false;								
+							if (addedClassDragging) {
+								addedClassDragging = false;
 								$li.removeClass('dragging');
 							}
 							if (Math.abs(dif) < 5) {
 								// Select
-								var id = parseInt($li.attr('data-id'));
 								App.DocList.doc.selectLayer(id);
 							} else {
 								// Order
@@ -86,14 +106,18 @@ App.Panel.Layers = (function() {
 					});
 
 
+
 			});
+			//set Opacity of current layer
+			sliderOpacity.enabled().val(App.DocList.doc.currentLayer.opacity);
 		} else {
 			panel.$content.addClass('disabled');
 			disabled = true;
+			sliderOpacity.disabled();
 		}
 	};
 
-	// Tools
+	// Tools bottom
 	var $layerTools = $('<div id="layer-tools-container"/>').appendTo(panel.$content),
 		$addLayer = $('<span class="layer-tool" id="layer-tool-add" title="New Layer"><i class="fa fa-file-o"></i></span>').appendTo($layerTools).click(function() {
 			if (!disabled) {

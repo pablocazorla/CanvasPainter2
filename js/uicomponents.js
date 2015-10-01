@@ -13,7 +13,7 @@ App.UI.Expando = (function() {
 				text: 'Expando',
 				open: false,
 				duration: 300,
-				afterExpand:function(){}
+				afterExpand: function() {}
 			}, options);
 
 			this.$node = $('<div class="expando"/>');
@@ -96,10 +96,15 @@ App.UI.Slider = (function() {
 				max: 100,
 				value: 0,
 				observable: null,
-				integer: true
+				integer: true,
+				enabled: true
 			}, options);
 
-			this._val = (this.config.observable !== null) ? this.config.observable : CanvasPainter.Utils.observable(this.config.value);
+
+			if (this.config.observable === null) {
+				this.config.observable = Utils.observable(this.config.value);
+			}
+
 			this.$node = $('<div class="slider ' + this.config.cssClass + '"/>');
 			if (this.config.label !== '') {
 				this.$label = $('<label>' + this.config.label + ':</label>').appendTo(this.$node);
@@ -118,6 +123,18 @@ App.UI.Slider = (function() {
 			});
 			return this;
 		},
+		enabled: function() {
+			this.config.enabled = true;
+			return this;
+		},
+		disabled: function() {
+			this.config.enabled = false;
+			return this;
+		},
+		subscribe: function(callback) {
+			this.config.observable.subscribe(callback);
+			return this;
+		},
 		update: function(v) {
 			var fact = (this.config.max - this.config.min) / this.$range.width(),
 				x = Math.round((v - this.config.min) / fact);
@@ -128,6 +145,10 @@ App.UI.Slider = (function() {
 		appendTo: function($parent) {
 			this.$node.appendTo($parent);
 			this.update(this.config.observable());
+			return this;
+		},
+		val: function(v) {
+			this.config.observable(v);
 			return this;
 		},
 		setEvents: function(self) {
@@ -146,21 +167,23 @@ App.UI.Slider = (function() {
 				};
 
 			this.$range.mousedown(function(e) {
-				dragging = true;
-				self.$rangeButton.removeClass('animated');
+				if (self.config.enabled) {
+					dragging = true;
+					self.$rangeButton.removeClass('animated');
 
-				rangeX = self.$range.offset().left;
-				rangeWidth = self.$range.width();
-				fact = (self.config.max - self.config.min) / rangeWidth;
-				setValue(e);
+					rangeX = self.$range.offset().left;
+					rangeWidth = self.$range.width();
+					fact = (self.config.max - self.config.min) / rangeWidth;
+					setValue(e);
+				}
 			});
 
 			$(window).mousemove(function(e) {
-				if (dragging) {
+				if (dragging && self.config.enabled) {
 					setValue(e);
 				}
 			}).mouseup(function() {
-				if (dragging) {
+				if (dragging && self.config.enabled) {
 					dragging = false;
 					self.$rangeButton.addClass('animated');
 				}
@@ -168,18 +191,22 @@ App.UI.Slider = (function() {
 			var prevValue;
 
 			this.$output.click(function() {
-				prevValue = self.config.observable();
-				self.$input.val(prevValue).show().focus();
+				if (self.config.enabled) {
+					prevValue = self.config.observable();
+					self.$input.val(prevValue).show().focus();
+				}
 			});
 			this.$input.blur(function() {
-				var newValue = CanvasPainter.Utils.toNumber(self.$input.val(), prevValue);
-				newValue = (self.config.integer) ? Math.round(newValue) : newValue;
+				if (self.config.enabled) {
+					var newValue = Utils.toNumber(self.$input.val(), prevValue);
+					newValue = (self.config.integer) ? Math.round(newValue) : newValue;
 
-				newValue = (newValue < self.config.min) ? self.config.min : newValue;
-				newValue = (newValue > self.config.max) ? self.config.max : newValue;
+					newValue = (newValue < self.config.min) ? self.config.min : newValue;
+					newValue = (newValue > self.config.max) ? self.config.max : newValue;
 
-				self.config.observable(newValue);
-				self.$input.hide();
+					self.config.observable(newValue);
+					self.$input.hide();
+				}
 			});
 			return this;
 		}

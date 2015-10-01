@@ -15,6 +15,20 @@ var Layer = (function() {
 
 			this.id = idLayerCounter++;
 			this.name = 'Layer-' + this.cfg.nameID;
+			this.visible = true;
+			this.opacity = 100;
+			this.imagedata = null;
+
+
+			return this;
+		},
+		toggleVisible: function() {
+			if (this.visible) {
+				this.visible = false;
+			} else {
+				this.visible = true;
+			}
+			this.cfg.parent.updateRenderer();
 			return this;
 		}
 	};
